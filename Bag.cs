@@ -13,4 +13,6 @@ public record Bag
         Attribute = match.Attribute();
         Color = match.Color();
     }
+
+    public override string ToString() => $"{Attribute} {Color}";
 }

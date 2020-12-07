@@ -27,21 +27,47 @@ foreach (var line in fileData)
 }
 
 var shinyGoldBag = bags.Single(b => b.Attribute == "shiny" && b.Color == "gold");
-var allPossibleHoldings = new List<Bag>();
-WalkHeldBy(shinyGoldBag);
-Console.WriteLine(allPossibleHoldings.Distinct().Count());
+Step1();
+Step2();
 
-void WalkHeldBy(Bag bag) 
+void Step2()
 {
-    if (bag.HeldBy.Count == 0)
+    var bagsInside = 0;
+    WalkHolding(shinyGoldBag, 1);
+
+    void WalkHolding(Bag bag, int modifier)
     {
-        return;
+        // Console.WriteLine($"Checking {bag} with modifier {modifier}");
+        foreach (var held in bag.Holds)
+        {
+            var total = held.Value * modifier;
+            bagsInside += total;
+
+            WalkHolding(held.Key, total);
+        }
     }
 
-    allPossibleHoldings.AddRange(bag.HeldBy);
-    foreach (var holdingBag in bag.HeldBy)
+    Console.WriteLine($"Step 2 answer is {bagsInside}");
+}
+
+void Step1()
+{
+    var allPossibleHoldings = new List<Bag>();
+    WalkHeldBy(shinyGoldBag);
+    Console.WriteLine($"Step 1 answer is {allPossibleHoldings.Distinct().Count()}");
+
+    void WalkHeldBy(Bag bag)
     {
-        WalkHeldBy(holdingBag);
+        if (bag.HeldBy.Count == 0)
+        {
+            return;
+        }
+
+        allPossibleHoldings.AddRange(bag.HeldBy);
+        foreach (var holdingBag in bag.HeldBy)
+        {
+            WalkHeldBy(holdingBag);
+        }
     }
 }
 
